@@ -277,7 +277,7 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
                         step={range > 20 ? 1 : 0.5}
                         value={[val ?? c.min_score]}
                         disabled={readOnly}
-                        onValueCommit={(v) => setScore(c.id, v[0])}
+                        onValueCommit={(v) => v[0] !== undefined && setScore(c.id, v[0])}
                         aria-label={c.name}
                       />
                       <span className="w-14 text-center text-lg font-bold tabular">{val ?? "—"}</span>
