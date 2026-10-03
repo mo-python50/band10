@@ -13,10 +13,13 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as JoinRouteImport } from './routes/join'
+import { Route as AuthenticatedArchiveRouteImport } from './routes/_authenticated/archive'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as JudgeEvaluationIdRouteImport } from './routes/judge.$evaluationId'
 import { Route as ResultsTokenRouteImport } from './routes/results.$token'
 import { Route as VoteTokenRouteImport } from './routes/vote.$token'
 import { Route as AuthenticatedEvaluationsNewRouteImport } from './routes/_authenticated/evaluations.new'
+import { Route as AuthenticatedEvaluationsIdEditRouteImport } from './routes/_authenticated/evaluations.$id.edit'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -36,6 +39,16 @@ const JoinRoute = JoinRouteImport.update({
   id: '/join',
   path: '/join',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedArchiveRoute = AuthenticatedArchiveRouteImport.update({
+  id: '/archive',
+  path: '/archive',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const JudgeEvaluationIdRoute = JudgeEvaluationIdRouteImport.update({
   id: '/judge/$evaluationId',
@@ -58,24 +71,36 @@ const AuthenticatedEvaluationsNewRoute =
     path: '/evaluations/new',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEvaluationsIdEditRoute =
+  AuthenticatedEvaluationsIdEditRouteImport.update({
+    id: '/evaluations/$id/edit',
+    path: '/evaluations/$id/edit',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/join': typeof JoinRoute
+  '/archive': typeof AuthenticatedArchiveRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/judge/$evaluationId': typeof JudgeEvaluationIdRoute
   '/results/$token': typeof ResultsTokenRoute
   '/vote/$token': typeof VoteTokenRoute
   '/evaluations/new': typeof AuthenticatedEvaluationsNewRoute
+  '/evaluations/$id/edit': typeof AuthenticatedEvaluationsIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/join': typeof JoinRoute
+  '/archive': typeof AuthenticatedArchiveRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/judge/$evaluationId': typeof JudgeEvaluationIdRoute
   '/results/$token': typeof ResultsTokenRoute
   '/vote/$token': typeof VoteTokenRoute
   '/evaluations/new': typeof AuthenticatedEvaluationsNewRoute
+  '/evaluations/$id/edit': typeof AuthenticatedEvaluationsIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -83,10 +108,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/join': typeof JoinRoute
+  '/_authenticated/archive': typeof AuthenticatedArchiveRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/judge/$evaluationId': typeof JudgeEvaluationIdRoute
   '/results/$token': typeof ResultsTokenRoute
   '/vote/$token': typeof VoteTokenRoute
   '/_authenticated/evaluations/new': typeof AuthenticatedEvaluationsNewRoute
+  '/_authenticated/evaluations/$id/edit': typeof AuthenticatedEvaluationsIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -94,29 +122,38 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/join'
+    | '/archive'
+    | '/dashboard'
     | '/judge/$evaluationId'
     | '/results/$token'
     | '/vote/$token'
     | '/evaluations/new'
+    | '/evaluations/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/join'
+    | '/archive'
+    | '/dashboard'
     | '/judge/$evaluationId'
     | '/results/$token'
     | '/vote/$token'
     | '/evaluations/new'
+    | '/evaluations/$id/edit'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/join'
+    | '/_authenticated/archive'
+    | '/_authenticated/dashboard'
     | '/judge/$evaluationId'
     | '/results/$token'
     | '/vote/$token'
     | '/_authenticated/evaluations/new'
+    | '/_authenticated/evaluations/$id/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -159,6 +196,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JoinRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/archive': {
+      id: '/_authenticated/archive'
+      path: '/archive'
+      fullPath: '/archive'
+      preLoaderRoute: typeof AuthenticatedArchiveRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/judge/$evaluationId': {
       id: '/judge/$evaluationId'
       path: '/judge/$evaluationId'
@@ -187,15 +238,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEvaluationsNewRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/evaluations/$id/edit': {
+      id: '/_authenticated/evaluations/$id/edit'
+      path: '/evaluations/$id/edit'
+      fullPath: '/evaluations/$id/edit'
+      preLoaderRoute: typeof AuthenticatedEvaluationsIdEditRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedArchiveRoute: typeof AuthenticatedArchiveRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEvaluationsNewRoute: typeof AuthenticatedEvaluationsNewRoute
+  AuthenticatedEvaluationsIdEditRoute: typeof AuthenticatedEvaluationsIdEditRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedArchiveRoute: AuthenticatedArchiveRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEvaluationsNewRoute: AuthenticatedEvaluationsNewRoute,
+  AuthenticatedEvaluationsIdEditRoute: AuthenticatedEvaluationsIdEditRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
