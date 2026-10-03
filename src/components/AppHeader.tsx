@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { LogOut, LayoutDashboard } from "lucide-react";
@@ -67,7 +68,7 @@ export function AppHeader() {
   );
 }
 
-export function PageShell({ children }: { children: React.ReactNode }) {
+export function PageShell({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen">
       <AppHeader />
