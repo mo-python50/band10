@@ -29,15 +29,13 @@ function Home() {
       <section className="hero-band">
         <div className="mx-auto max-w-6xl px-4 pb-24 pt-14 sm:pt-20">
           <p className="mb-4 inline-block rounded-full border border-primary-foreground/20 px-3 py-1 text-xs text-primary-foreground/80">
-            منصة تقييم عربية مرنة
+            منصة تقييم المسابقات
           </p>
           <h1 className="max-w-2xl text-4xl font-bold leading-tight sm:text-5xl">
-            كل بند له وزنه.
-            <br />
-            وكل نتيجة لها سببها.
+            بند
           </h1>
           <p className="mt-5 max-w-xl text-base text-primary-foreground/80 sm:text-lg">
-            قيّم المتسابقين، الأطباق، المشاريع أو أي قائمة — بمعايير موزونة ومحكمين وتصويت جمهور، والحساب علينا.
+            قيّم المتسابقين، الأطباق، المسابقات أو أي قائمة — بمعايير موزونة ومحكمين وتصويت جمهور...
           </p>
         </div>
       </section>
