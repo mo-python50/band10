@@ -18,7 +18,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Logo } from "@/components/AppHeader";
-import { getJudgeState, saveComment, saveScore, submitJudge } from "@/lib/public.functions";
+import { getJudgeState, reopenJudge, saveComment, saveScore, submitJudge } from "@/lib/public.functions";
 import { errMsg } from "@/lib/share";
 import { fmt } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -68,6 +68,8 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
   const save = useServerFn(saveScore);
   const saveNote = useServerFn(saveComment);
   const submit = useServerFn(submitJudge);
+  const reopen = useServerFn(reopenJudge);
+  const [reopening, setReopening] = useState(false);
   const qc = useQueryClient();
   const q = useQuery({
     queryKey: ["judge", evaluationId],
@@ -117,6 +119,28 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
         <CheckCircle2 className="mx-auto size-14 text-success" />
         <h1 className="mt-4 text-2xl font-bold">شكراً {data.judge.name}</h1>
         <p className="mt-2 text-muted-foreground">تم إرسال تقييمك لـ «{data.evaluation.name}». النتائج يحسبها النظام تلقائياً.</p>
+        {data.evaluation.status === "active" && (
+          <Button
+            variant="outline"
+            className="mt-6"
+            disabled={reopening}
+            onClick={async () => {
+              setReopening(true);
+              try {
+                await reopen({ data: { token } });
+                setIdx(0);
+                toast.success("يمكنك الآن تعديل درجاتك ثم إعادة الإرسال");
+                await qc.invalidateQueries({ queryKey: ["judge", evaluationId] });
+              } catch (e) {
+                toast.error(errMsg(e));
+              } finally {
+                setReopening(false);
+              }
+            }}
+          >
+            {reopening && <Loader2 className="size-4 animate-spin" />} تعديل تقييمي
+          </Button>
+        )}
       </Centered>
     );
 
