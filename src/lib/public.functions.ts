@@ -276,3 +276,15 @@ export const getPublicResults = createServerFn({ method: "POST" })
     }
     return { ...payload, images, judgeNames };
   });
+
+export const reopenJudge = createServerFn({ method: "POST" })
+  .inputValidator((d) => z.object({ token: tokenSchema }).parse(d))
+  .handler(async ({ data }) => {
+    const { admin, judge } = await judgeFromToken(data.token);
+    const { data: ev } = await admin.from("evaluations").select("status").eq("id", judge.evaluation_id).single();
+    if (ev?.status !== "active") throw new Error("لا يمكن تعديل التقييم لأن التحكيم مغلق");
+    const { error } = await admin.from("judges").update({ submitted_at: null }).eq("id", judge.id);
+    pgError(error);
+    await admin.from("evaluation_events").insert({ evaluation_id: judge.evaluation_id, event_type: "judge_reopened", payload: { judge_id: judge.id } });
+    return { ok: true };
+  });
