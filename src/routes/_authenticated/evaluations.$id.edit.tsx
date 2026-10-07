@@ -101,7 +101,7 @@ function StatusActions({ ev }: { ev: Ev }) {
     setBusy(true);
     const { error } = await supabase.rpc("set_evaluation_status", { _eval: ev.id, _status: status });
     setBusy(false);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     toast.success("تم تحديث الحالة");
     qc.invalidateQueries({ queryKey: ["eval", ev.id] });
     qc.invalidateQueries({ queryKey: ["evals"] });
@@ -137,7 +137,7 @@ function Setup({ ev }: { ev: Ev }) {
 
   async function updateEv(patch: Partial<Ev>) {
     const { error } = await supabase.from("evaluations").update(patch).eq("id", ev.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     qc.invalidateQueries({ queryKey: ["eval", ev.id] });
     qc.invalidateQueries({ queryKey: ["evals"] });
   }
@@ -225,17 +225,17 @@ function ItemsEditor({ ev, locked }: { ev: Ev; locked: boolean }) {
   }
   async function remove(it: Item) {
     const { error } = await supabase.from("evaluation_items").delete().eq("id", it.id);
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     if (it.image_url) await supabase.storage.from("item-images").remove([it.image_url]);
     refresh();
   }
   async function upload(it: Item, file: File) {
-    if (file.size > 5 * 1024 * 1024) return toast.error("الحد الأقصى لحجم الصورة 5 ميجابايت");
+    if (file.size > 5 * 1024 * 1024) { toast.error("الحد الأقصى لحجم الصورة 5 ميجابايت"); return; }
     const { data: u } = await supabase.auth.getUser();
     const ext = file.name.split(".").pop() || "jpg";
     const path = `${u.user!.id}/${ev.id}/${crypto.randomUUID()}.${ext}`;
     const { error } = await supabase.storage.from("item-images").upload(path, file, { contentType: file.type });
-    if (error) return toast.error(errMsg(error));
+    if (error) { toast.error(errMsg(error)); return; }
     if (it.image_url) await supabase.storage.from("item-images").remove([it.image_url]);
     update(it.id, { image_url: path });
   }
