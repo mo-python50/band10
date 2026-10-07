@@ -412,6 +412,7 @@ export type Database = {
     }
     Functions: {
       compute_results_live: { Args: { _eval: string }; Returns: Json }
+      delete_evaluation: { Args: { _eval: string }; Returns: undefined }
       gen_judge_code: { Args: never; Returns: string }
       get_public_results: { Args: { _token: string }; Returns: Json }
       get_results: { Args: { _eval: string }; Returns: Json }
