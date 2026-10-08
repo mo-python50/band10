@@ -62,7 +62,7 @@ export const joinEvaluation = createServerFn({ method: "POST" })
       event_type: "judge_joined",
       payload: { name: data.name },
     });
-    return { token, evaluationId: ev.id, name: ev.name };
+    return { token, evaluationId: ev.id, name: ev.name, code: normalized };
   });
 
 export const getJudgeState = createServerFn({ method: "POST" })

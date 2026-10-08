@@ -1,6 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { ChevronLeft } from "lucide-react";
+import { loadSessions, saveSession, type JudgeSession } from "@/lib/judge-sessions";
 import { toast } from "sonner";
 import { KeyRound, Loader2 } from "lucide-react";
 import { z } from "zod";
@@ -33,13 +36,23 @@ function JoinPage() {
   const [code, setCode] = useState(initial ?? "");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [sessions, setSessions] = useState<JudgeSession[]>([]);
+  useEffect(() => setSessions(loadSessions()), []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    const norm = code.toUpperCase().replace(/\s/g, "");
+    const existing = sessions.find((x) => x.code === norm || x.code === `BND-${norm.replace(/^BND-?/, "")}`);
+    if (existing) {
+      toast.success(`أهلاً بعودتك ${existing.judgeName}`);
+      navigate({ to: "/judge/$evaluationId", params: { evaluationId: existing.evaluationId } });
+      return;
+    }
     setBusy(true);
     try {
       const res = await join({ data: { code, name } });
       localStorage.setItem(`band:judge:${res.evaluationId}`, res.token);
+      saveSession({ evaluationId: res.evaluationId, code: res.code, evaluationName: res.name, judgeName: name.trim() });
       toast.success(`مرحباً ${name}! انضممت إلى «${res.name}»`);
       navigate({ to: "/judge/$evaluationId", params: { evaluationId: res.evaluationId } });
     } catch (err) {
@@ -52,6 +65,24 @@ function JoinPage() {
   return (
     <PageShell>
       <div className="mx-auto max-w-md">
+        {sessions.length > 0 && (
+          <div className="surface mb-4 p-4">
+            <p className="mb-2 text-sm font-semibold">متابعة التحكيم</p>
+            <ul className="divide-y">
+              {sessions.map((x) => (
+                <li key={x.evaluationId}>
+                  <Link to="/judge/$evaluationId" params={{ evaluationId: x.evaluationId }} className="flex items-center justify-between gap-3 py-3">
+                    <span className="min-w-0">
+                      <span className="block truncate font-medium">{x.evaluationName}</span>
+                      <span className="text-xs text-muted-foreground">باسم {x.judgeName} · <span dir="ltr">{x.code}</span></span>
+                    </span>
+                    <ChevronLeft className="size-5 text-muted-foreground" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="surface p-6 sm:p-8">
           <span className="grid size-12 place-items-center rounded-xl bg-accent text-accent-foreground">
             <KeyRound className="size-6" />
