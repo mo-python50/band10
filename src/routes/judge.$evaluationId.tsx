@@ -328,7 +328,7 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
                 </button>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground">بعد الإرسال لا يمكن تعديل الدرجات. لن يرى أحد درجاتك الفردية سوى مالك التقييم.</p>
+            <p className="text-sm text-muted-foreground">يمكنك تعديل درجاتك بعد الإرسال طالما بقي التحكيم مفتوحاً. لن يرى أحد درجاتك الفردية سوى مالك التقييم.</p>
             <Button size="lg" className="h-14 w-full text-base" disabled={filled < total || readOnly} onClick={() => setConfirm(true)}>
               <Send className="size-5" />
               إرسال التقييم النهائي
@@ -355,7 +355,7 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
         <AlertDialogContent dir="rtl">
           <AlertDialogHeader>
             <AlertDialogTitle>تأكيد الإرسال النهائي</AlertDialogTitle>
-            <AlertDialogDescription>لن تتمكن من تعديل أي درجة بعد الإرسال. هل أنت متأكد؟</AlertDialogDescription>
+            <AlertDialogDescription>سيتم احتساب درجاتك في النتائج. يمكنك تعديلها لاحقاً طالما بقي التحكيم مفتوحاً.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>تراجع</AlertDialogCancel>
