@@ -79,7 +79,7 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
 
   const [scores, setScores] = useState<ScoreMap>({});
   const [notes, setNotes] = useState<Record<string, string>>({});
-  const [idx, setIdx] = useState(0);
+  const [idx, setIdx] = useState(-1); // -1 = items list
   const [saving, setSaving] = useState(0);
   const [confirm, setConfirm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -128,7 +128,7 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
               setReopening(true);
               try {
                 await reopen({ data: { token } });
-                setIdx(0);
+                setIdx(-1);
                 toast.success("يمكنك الآن تعديل درجاتك ثم إعادة الإرسال");
                 await qc.invalidateQueries({ queryKey: ["judge", evaluationId] });
               } catch (e) {
@@ -145,7 +145,7 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
     );
 
   const item = items[idx];
-  const onReview = idx >= items.length;
+  const onReview = idx < 0 || idx >= items.length;
 
   async function setScore(criterionId: string, value: number) {
     if (readOnly || !item) return;
@@ -233,10 +233,10 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
               </button>
             ))}
             <button
-              onClick={() => setIdx(items.length)}
+              onClick={() => setIdx(-1)}
               className={cn("shrink-0 rounded-md border px-3 text-xs font-medium", onReview ? "border-primary bg-primary text-primary-foreground" : "bg-card")}
             >
-              إرسال
+              القائمة
             </button>
           </div>
         </div>
@@ -319,12 +319,17 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
           </div>
         ) : (
           <div className="animate-rise space-y-4">
-            <h1 className="text-2xl font-bold">مراجعة وإرسال</h1>
+            <div>
+              <h1 className="text-2xl font-bold">العناصر المطلوب تقييمها</h1>
+              <p className="mt-1 text-sm text-muted-foreground">اختر أي عنصر لتقييمه بالترتيب الذي تريده. درجاتك تُحفظ تلقائياً ويمكنك التوقف والعودة لاحقاً.</p>
+            </div>
             <div className="surface divide-y">
               {items.map((it, i) => (
-                <button key={it.id} onClick={() => setIdx(i)} className="flex w-full items-center justify-between p-4 text-start hover:bg-muted/50">
-                  <span className="font-medium">{i + 1}. {it.name}</span>
-                  {itemDone(it.id) ? <CheckCircle2 className="size-5 text-success" /> : <span className="text-xs text-destructive">غير مكتمل</span>}
+                <button key={it.id} onClick={() => setIdx(i)} className="flex w-full items-center gap-3 p-4 text-start hover:bg-muted/50">
+                  {it.image ? <img src={it.image} alt="" className="size-12 shrink-0 rounded-lg object-cover" /> : <span className="grid size-12 shrink-0 place-items-center rounded-lg bg-muted font-bold tabular">{i + 1}</span>}
+                  <span className="min-w-0 flex-1 truncate font-medium">{it.name}</span>
+                  {itemDone(it.id) ? <CheckCircle2 className="size-5 shrink-0 text-success" /> : <span className="shrink-0 text-xs text-muted-foreground">لم يُقيّم</span>}
+                  <ChevronLeft className="size-4 shrink-0 text-muted-foreground" />
                 </button>
               ))}
             </div>
@@ -338,18 +343,23 @@ function JudgeWorkspace({ token, evaluationId }: { token: string; evaluationId: 
         )}
       </main>
 
+      {!onReview && (
       <footer className="sticky bottom-0 border-t bg-background/95 backdrop-blur">
-        <div className="mx-auto flex max-w-2xl gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-2xl gap-2 px-4 py-3">
           <Button variant="outline" size="lg" className="h-12 flex-1" disabled={idx === 0} onClick={() => setIdx((i) => Math.max(0, i - 1))}>
             <ChevronRight className="size-5" />
             السابق
           </Button>
-          <Button size="lg" className="h-12 flex-1" disabled={onReview} onClick={() => setIdx((i) => Math.min(items.length, i + 1))}>
-            {idx === items.length - 1 ? "المراجعة" : "التالي"}
+          <Button variant="secondary" size="lg" className="h-12 flex-1" onClick={() => setIdx(-1)}>
+            القائمة
+          </Button>
+          <Button size="lg" className="h-12 flex-1" disabled={idx >= items.length - 1} onClick={() => setIdx((i) => i + 1)}>
+            التالي
             <ChevronLeft className="size-5" />
           </Button>
         </div>
       </footer>
+      )}
 
       <AlertDialog open={confirm} onOpenChange={setConfirm}>
         <AlertDialogContent dir="rtl">
